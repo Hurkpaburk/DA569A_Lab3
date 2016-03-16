@@ -11,6 +11,9 @@ import android.widget.CheckBox;
 
 public class MainActivity extends AppCompatActivity {
 
+    protected boolean soundOn = true;
+    public static final String message = "message";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,16 +29,17 @@ public class MainActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.checkboxSound:
                 if (checked) {
-                    // Put some meat on the sandwich
+                    soundOn = true;
                 }
                 else {
-                    // Remove the meat
+                    soundOn = false;
                 }
                 break;
         }
     }
     public void playGame(View view) {
         Intent intent = new Intent(this, PlayGame.class);
+        intent.putExtra(message, soundOn);
         startActivity(intent);
     }
 
