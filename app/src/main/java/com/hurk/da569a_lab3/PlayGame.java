@@ -1,18 +1,23 @@
 package com.hurk.da569a_lab3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.graphics.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class PlayGame extends Activity implements OnTouchListener {
@@ -37,8 +42,73 @@ public class PlayGame extends Activity implements OnTouchListener {
         soundPoolMap.put(0, soundPool.load(this, R.raw.sound, 1));
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        drawView.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        drawView.pause();
+    }
+
     public class DrawView extends SurfaceView implements Runnable {
-        // LÖS
+
+        Thread gameloop = null;
+        SurfaceHolder surface;
+        volatile boolean running = false;
+        AssetManager assetManager = null;
+        BitmapFactory.Options options = null;
+        Bitmap monster = null;
+        int frame = 0;
+
+
+        public DrawView(Context context) {
+            super(context);
+            try {
+                surface = getHolder();
+                assetManager = context.getAssets();
+                InputStream inputStream = assetManager.open("blinking_green.png");
+                options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                monster = BitmapFactory.decodeStream(inputStream, null, options);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // CHANGE / REMOVE THIS!!!? ???
+        @Override
+        public void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            canvas.drawARGB(255, 154, 246, 240);
+            canvas.drawBitmap(monster, 400, 400, null);
+        }
+
+
+        public void resume() {
+            running = true;
+            gameloop = new Thread(this);
+            gameloop.start();
+        }
+
+        public void pause() {
+            running = false;
+            while (true) {
+                try {
+                    gameloop.join();
+                }
+                catch (InterruptedException e) {
+
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            // SIDAN 148 kombinerat med onDraw ovan
+        }
     }
 
     @Override
