@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,14 +16,14 @@ import android.graphics.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 
 public class PlayGame extends Activity implements OnTouchListener {
+
 
     protected boolean soundOn;
     protected Intent intent;
     protected DrawView drawView;
-    protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart;
+    protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart, points;
     protected MediaPlayer mp;
 
 
@@ -36,7 +32,9 @@ public class PlayGame extends Activity implements OnTouchListener {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         intent = getIntent();
-        soundOn = intent.getBooleanExtra(MainActivity.message, true);
+        soundOn = intent.getBooleanExtra(MainActivity.MESSAGE, true);
+        points = intent.getIntExtra(MainActivity.POINTMESSAGE,0);
+
         drawView = new DrawView(this);
         setContentView(drawView);
         drawView.setOnTouchListener(this);
