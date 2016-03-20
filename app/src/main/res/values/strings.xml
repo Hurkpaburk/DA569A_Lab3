@@ -5,4 +5,5 @@
     <string name="screen_info">Screen Information:</string>
     <string name="title_activity_screen_info">Temp</string>
     <string name="about_game">Score is reset to 0 for each game played.\nOne Point is given for pressing the object.</string>
+    <string name="currScoreText">Current Score: </string>
 </resources>

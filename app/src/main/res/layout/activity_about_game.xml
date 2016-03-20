@@ -20,7 +20,39 @@
         android:layout_gravity="center_horizontal|center_vertical"
         android:layout_margin="30dp"
         android:text="@string/about_game"
-        android:textColor="#000000"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/currScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textAboutGame"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:text="@string/currScoreText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/currScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currScoreText"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <Button
+        android:id="@+id/resetScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currScore"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:onClick="resetScore"
+        android:text="Reset Score"
+        android:textColor="#000000" />
 
 </RelativeLayout>
