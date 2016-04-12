@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lab 3</string>
+    <string name="app_name">Monster Hunt</string>
     <string name="game_name">Choose your destiny:</string>
     <string name="checkbox">Sound On/Off</string>
     <string name="screen_info">Screen Information:</string>

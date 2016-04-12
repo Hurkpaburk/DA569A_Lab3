@@ -1,4 +1,4 @@
-package com.hurk.da569a_lab3;
+package com.hurk.game_project;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.hurk.da569a_lab3;
+package com.hurk.game_project;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,8 +17,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Random;
 
 public class PlayGame extends Activity implements OnTouchListener {
@@ -101,25 +99,20 @@ public class PlayGame extends Activity implements OnTouchListener {
         AssetManager assetManager = null;
         BitmapFactory.Options options = null;
         Bitmap monster = null;
+        Texture monster_image = null;
         int frame = 0;
 
 
         public DrawView(Context context) {
             super(context);
             surface = getHolder();
-            assetManager = context.getAssets();
 
-            try {
-                InputStream inputStream = assetManager.open("blinking_green.png");
-                options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                monster = BitmapFactory.decodeStream(inputStream, null, options);
-                inputStream.close();
-                bitMapHeight = monster.getHeight();
-                bitMapWidth = monster.getWidth();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            monster_image = new Texture(context);
+            monster_image.loadFromAsset("blinking_green.png");
+            monster = monster_image.getBitmap();
+            bitMapHeight = monster.getHeight();
+            bitMapWidth = monster.getWidth();
+
         }
 
         public void resume() {
