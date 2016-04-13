@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
+/* Code base taken from course literature */
 public class Texture {
 
     private Context context;

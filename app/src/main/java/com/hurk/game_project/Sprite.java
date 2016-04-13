@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 
+/* Code base taken from course literature */
 public class Sprite {
     public Point position;
     private Canvas canvas;
