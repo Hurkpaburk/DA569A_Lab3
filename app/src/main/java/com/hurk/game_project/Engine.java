@@ -216,7 +216,7 @@ public abstract class Engine extends Activity implements Runnable, OnTouchListen
         paintFont.setTextSize((float) size);
     }
 
-    public void setTextStule(FontStyles styles) {
+    public void setTextStyle(FontStyles styles) {
         typeface = Typeface.create(Typeface.DEFAULT, styles.val);
         paintFont.setTypeface(typeface);
     }

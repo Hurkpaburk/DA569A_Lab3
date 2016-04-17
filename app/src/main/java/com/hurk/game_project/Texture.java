@@ -36,4 +36,12 @@ public class Texture {
         }
         return true;
     }
+
+    public int getHeight() {
+        return bitmap.getHeight();
+    }
+
+    public int getWidth() {
+        return bitmap.getWidth();
+    }
 }

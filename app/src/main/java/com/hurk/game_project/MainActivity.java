@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public void playGame(View view) {
         Intent intent = new Intent(this, PlayGame.class);
         intent.putExtra(MESSAGE, soundOn);
-        intent.putExtra(POINTMESSAGE,points);
+        //intent.putExtra(POINTMESSAGE,points);
         startActivityForResult(intent, 1);
     }
 

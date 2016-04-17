@@ -1,26 +1,171 @@
 package com.hurk.game_project;
 
-import android.app.Activity;
-import android.content.Context;
+
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.Window;
 
 import java.util.Random;
 
-public class PlayGame extends Activity implements OnTouchListener {
+public class PlayGame extends Engine {
 
+    protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart, points, canvasWidth, canvasHeight, update, startUpdate;
+    protected MediaPlayer mp;
+    float xDir, yDir, canvasRatio;
+    TextPrinter textPrinter;
+    private Paint paint;
+    private Canvas canvas;
+    private Timer timer;
+    private Sprite clickMonster, evilMonster;
+    private Texture clickMonsterImage, evilMonsterImage;
+    private boolean soundOn, newPosition, gameOver;
+    private Intent intent;
+    private Point touch, newPos;
+    private Random rand;
+
+    public PlayGame() {
+        paint = new Paint();
+        canvas = null;
+        clickMonster = null;
+        evilMonster = null;
+        clickMonsterImage = null;
+        evilMonsterImage = null;
+        timer = new Timer();
+        touch = new Point();
+        newPos = new Point();
+        rand = new Random();
+        newPosition = false;
+        startUpdate = 1000;
+        textPrinter = new TextPrinter();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        intent = getIntent();
+        soundOn = intent.getBooleanExtra(MainActivity.MESSAGE, true);
+        points = 0;
+        mp = MediaPlayer.create(this, R.raw.sound);
+    }
+
+    public void init() {
+        super.setScreenOrientation(ScreenModes.PORTRAIT);
+    }
+
+    public void load() {
+        clickMonster = new Sprite(this);
+        clickMonsterImage = new Texture(this);
+        if (!clickMonsterImage.loadFromAsset("blinking_green.png")) {
+            super.fatalError("Error loading clickMonster image");
+        }
+        clickMonster.setTexture(clickMonsterImage);
+
+        evilMonster = new Sprite(this);
+        evilMonsterImage = new Texture(this);
+        if (!evilMonsterImage.loadFromAsset("blinking_green.png")) {
+            super.fatalError("Error loading evilMonster image");
+        }
+        evilMonster.setTexture(evilMonsterImage);
+    }
+
+    public void draw() {
+        if (!gameOver) {
+            paint.setColor(Color.argb(240, 255, 154, 246));
+            canvas = super.getCanvas();
+
+            canvasHeight = canvas.getHeight();
+            canvasWidth = canvas.getWidth();
+            canvasRatio = (float) canvasWidth / canvasHeight;
+            bitMapWidth = clickMonsterImage.getWidth();
+            bitMapHeight = clickMonsterImage.getHeight();
+
+            while (newPosition) {
+                bitMapXStart = rand.nextInt(canvasWidth - bitMapWidth);
+                bitMapYStart = rand.nextInt(canvasHeight - bitMapHeight);
+                newPosition = false;
+                newPos.set(bitMapXStart, bitMapYStart);
+                clickMonster.setPosition(newPos);
+
+                xDir = rand.nextInt(points * 8) - points * 4;
+                yDir = canvasRatio * (rand.nextInt(points * 8) - points * 4);
+            }
+
+            if (points == 0) {
+                update = startUpdate;
+            } else {
+                update = Math.max(startUpdate / points, 1);
+            }
+
+            if (timer.stopWatch(update)) {
+                Point move = new Point(clickMonster.getPosition().x + (int) xDir, clickMonster.getPosition().y + (int) yDir);
+                clickMonster.setPosition(move);
+
+            }
+
+            clickMonster.draw();
+
+        } else {
+            textPrinter.setCanvas(canvas);
+            textPrinter.setColor(Color.BLACK);
+            textPrinter.setTextSize(100);
+            textPrinter.draw("GAME OVER", canvasWidth / 2, canvasHeight / 2);
+        }
+    }
+
+    public void update() {
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
+        touch.set((int) event.getX(), (int) event.getY());
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (points < 0) {
+                    gameOver = true;
+                } else {
+                    if ((touch.x >= clickMonster.getPosition().x && touch.x <= clickMonster.getPosition().x + bitMapWidth) &&
+                            (touch.y >= clickMonster.getPosition().y && touch.y <= clickMonster.getPosition().y + bitMapHeight)) {
+                        if (soundOn) {
+                            mp.start();
+                        } else {
+                            // Do not play sound
+                        }
+                        points = points + 1;
+                        newPosition = true; // new position
+                    } else {
+                        points = points - 1;
+                    }
+                }
+                break;
+            default:
+                // Do nothing
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(MainActivity.POINTMESSAGE, points);
+        Log.v("onBackPressed", Integer.toString(points));
+        setResult(1, intent);
+        finish();
+    }
+}
+
+
+
+   /*
 
     protected boolean soundOn, newPosition;
     protected Intent intent;
@@ -28,6 +173,9 @@ public class PlayGame extends Activity implements OnTouchListener {
     protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart, points, canvasWidth, canvasHeight;
     protected MediaPlayer mp;
     protected Random rand = new Random();
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +246,8 @@ public class PlayGame extends Activity implements OnTouchListener {
         volatile boolean running = false;
         AssetManager assetManager = null;
         BitmapFactory.Options options = null;
-        Bitmap monster = null;
-        Texture monster_image = null;
+        Bitmap clickMonster = null;
+        Texture clickMonsterImage = null;
         int frame = 0;
 
 
@@ -107,11 +255,11 @@ public class PlayGame extends Activity implements OnTouchListener {
             super(context);
             surface = getHolder();
 
-            monster_image = new Texture(context);
-            monster_image.loadFromAsset("blinking_green.png");
-            monster = monster_image.getBitmap();
-            bitMapHeight = monster.getHeight();
-            bitMapWidth = monster.getWidth();
+            clickMonsterImage = new Texture(context);
+            clickMonsterImage.loadFromAsset("blinking_green.png");
+            clickMonster = clickMonsterImage.getBitmap();
+            bitMapHeight = clickMonster.getHeight();
+            bitMapWidth = clickMonster.getWidth();
 
         }
 
@@ -143,7 +291,7 @@ public class PlayGame extends Activity implements OnTouchListener {
                     bitMapYStart = rand.nextInt(canvasHeight - bitMapHeight);
                     newPosition = false;
                 }
-                canvas.drawBitmap(monster, bitMapXStart, bitMapYStart, null);
+                canvas.drawBitmap(clickMonster, bitMapXStart, bitMapYStart, null);
 
                 surface.unlockCanvasAndPost(canvas);
 
@@ -157,3 +305,4 @@ public class PlayGame extends Activity implements OnTouchListener {
     }
 
 }
+*/
