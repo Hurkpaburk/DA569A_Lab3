@@ -113,9 +113,9 @@ public abstract class Engine extends Activity implements Runnable, OnTouchListen
                 canvas.drawColor(Color.BLUE);
                 draw();
                 int x = canvas.getWidth() - 150;
-                canvas.drawText("ENGINE", x, 20, paintFont);
+               /* canvas.drawText("ENGINE", x, 20, paintFont);
                 canvas.drawText(toString(frameRate) + " FPS", x, 40, paintFont);
-                canvas.drawText("Pauses: " + toString(pauseCount), x, 60, paintFont);
+                canvas.drawText("Pauses: " + toString(pauseCount), x, 60, paintFont); */
                 endDrawing();
             }
 

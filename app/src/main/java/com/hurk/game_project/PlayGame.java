@@ -16,9 +16,11 @@ import java.util.Random;
 
 public class PlayGame extends Engine {
 
-    protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart, points, canvasWidth, canvasHeight, update, startUpdate;
+    protected int clickMonsterHeight, clickMonsterWidth, clickMonsterXStart, clickMonsterYStart, points,
+            evilMonsterHeight, evilMonsterWidth, canvasWidth, canvasHeight, update, startUpdate, xDir, yDir,
+            newXpos, newYpos;
     protected MediaPlayer mp;
-    float xDir, yDir, canvasRatio;
+    float canvasRatio;
     TextPrinter textPrinter;
     private Paint paint;
     private Canvas canvas;
@@ -66,35 +68,40 @@ public class PlayGame extends Engine {
             super.fatalError("Error loading clickMonster image");
         }
         clickMonster.setTexture(clickMonsterImage);
+        clickMonsterWidth = clickMonsterImage.getWidth();
+        clickMonsterHeight = clickMonsterImage.getHeight();
 
         evilMonster = new Sprite(this);
         evilMonsterImage = new Texture(this);
-        if (!evilMonsterImage.loadFromAsset("blinking_green.png")) {
+        if (!evilMonsterImage.loadFromAsset("Evil_Monster.png")) {
             super.fatalError("Error loading evilMonster image");
         }
         evilMonster.setTexture(evilMonsterImage);
+        evilMonsterWidth = evilMonsterImage.getWidth();
+        evilMonsterHeight = evilMonsterImage.getHeight();
     }
 
     public void draw() {
         if (!gameOver) {
-            paint.setColor(Color.argb(240, 255, 154, 246));
+            getCanvas().drawColor(Color.argb(255, 154, 246, 240));
             canvas = super.getCanvas();
 
             canvasHeight = canvas.getHeight();
             canvasWidth = canvas.getWidth();
             canvasRatio = (float) canvasWidth / canvasHeight;
-            bitMapWidth = clickMonsterImage.getWidth();
-            bitMapHeight = clickMonsterImage.getHeight();
+
 
             while (newPosition) {
-                bitMapXStart = rand.nextInt(canvasWidth - bitMapWidth);
-                bitMapYStart = rand.nextInt(canvasHeight - bitMapHeight);
-                newPosition = false;
-                newPos.set(bitMapXStart, bitMapYStart);
+                clickMonsterXStart = rand.nextInt(canvasWidth - clickMonsterWidth);
+                clickMonsterYStart = rand.nextInt(canvasHeight - clickMonsterHeight);
+
+                newPos.set(clickMonsterXStart, clickMonsterYStart);
                 clickMonster.setPosition(newPos);
 
                 xDir = rand.nextInt(points * 8) - points * 4;
-                yDir = canvasRatio * (rand.nextInt(points * 8) - points * 4);
+                yDir = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
+
+                newPosition = false;
             }
 
             if (points == 0) {
@@ -103,8 +110,20 @@ public class PlayGame extends Engine {
                 update = Math.max(startUpdate / points, 1);
             }
 
+
             if (timer.stopWatch(update)) {
-                Point move = new Point(clickMonster.getPosition().x + (int) xDir, clickMonster.getPosition().y + (int) yDir);
+
+                if ((clickMonster.getPosition().x + clickMonsterWidth >= canvasWidth || clickMonster.getPosition().x <= 0) ||
+                        (clickMonster.getPosition().y + clickMonsterHeight >= canvasHeight || clickMonster.getPosition().y <= 0)) {
+                    xDir = -xDir;
+                    yDir = -yDir;
+                } else {
+                    // Do nothing
+                }
+
+                newXpos = clickMonster.getPosition().x + xDir;
+                newYpos = clickMonster.getPosition().x + xDir;
+                Point move = new Point(newXpos, newYpos);
                 clickMonster.setPosition(move);
 
             }
@@ -114,8 +133,10 @@ public class PlayGame extends Engine {
         } else {
             textPrinter.setCanvas(canvas);
             textPrinter.setColor(Color.BLACK);
-            textPrinter.setTextSize(100);
-            textPrinter.draw("GAME OVER", canvasWidth / 2, canvasHeight / 2);
+            textPrinter.setTextSize(80);
+            textPrinter.draw("GAME OVER", 20, canvasHeight / 2);
+            textPrinter.setTextSize(50);
+            textPrinter.draw("Press back to return to main menu", 20, canvasHeight / 2 + 30);
         }
     }
 
@@ -131,8 +152,8 @@ public class PlayGame extends Engine {
                 if (points < 0) {
                     gameOver = true;
                 } else {
-                    if ((touch.x >= clickMonster.getPosition().x && touch.x <= clickMonster.getPosition().x + bitMapWidth) &&
-                            (touch.y >= clickMonster.getPosition().y && touch.y <= clickMonster.getPosition().y + bitMapHeight)) {
+                    if ((touch.x >= clickMonster.getPosition().x && touch.x <= clickMonster.getPosition().x + clickMonsterWidth) &&
+                            (touch.y >= clickMonster.getPosition().y && touch.y <= clickMonster.getPosition().y + clickMonsterHeight)) {
                         if (soundOn) {
                             mp.start();
                         } else {
@@ -162,147 +183,3 @@ public class PlayGame extends Engine {
         finish();
     }
 }
-
-
-
-   /*
-
-    protected boolean soundOn, newPosition;
-    protected Intent intent;
-    protected DrawView drawView;
-    protected int bitMapHeight, bitMapWidth, bitMapXStart, bitMapYStart, points, canvasWidth, canvasHeight;
-    protected MediaPlayer mp;
-    protected Random rand = new Random();
-
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        intent = getIntent();
-        soundOn = intent.getBooleanExtra(MainActivity.MESSAGE, true);
-        points = intent.getIntExtra(MainActivity.POINTMESSAGE, 0);
-        newPosition = true;
-        drawView = new DrawView(this);
-        setContentView(drawView);
-        drawView.setOnTouchListener(this);
-        mp = MediaPlayer.create(this, R.raw.sound);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        drawView.resume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        drawView.pause();
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        int touchX = (int) event.getX();
-        int touchY = (int) event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if ((touchX >= bitMapXStart && touchX <= bitMapXStart + bitMapWidth) &&
-                        (touchY >= bitMapYStart && touchY <= bitMapYStart + bitMapHeight)) {
-                    if (soundOn) {
-                        mp.start();
-                    } else {
-                        // Do not play sound
-                    }
-                    points = points + 1;
-                    newPosition = true; // new position
-                } else {
-                    // Do nothing
-                }
-                break;
-            default:
-                // Do nothing
-                break;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(MainActivity.POINTMESSAGE, points);
-        Log.v("onBackPressed", Integer.toString(points));
-        setResult(1, intent);
-        finish();
-    }
-
-    public class DrawView extends SurfaceView implements Runnable {
-
-        Thread gameloop = null;
-        SurfaceHolder surface;
-        volatile boolean running = false;
-        AssetManager assetManager = null;
-        BitmapFactory.Options options = null;
-        Bitmap clickMonster = null;
-        Texture clickMonsterImage = null;
-        int frame = 0;
-
-
-        public DrawView(Context context) {
-            super(context);
-            surface = getHolder();
-
-            clickMonsterImage = new Texture(context);
-            clickMonsterImage.loadFromAsset("blinking_green.png");
-            clickMonster = clickMonsterImage.getBitmap();
-            bitMapHeight = clickMonster.getHeight();
-            bitMapWidth = clickMonster.getWidth();
-
-        }
-
-        public void resume() {
-            running = true;
-            gameloop = new Thread(this);
-            gameloop.start();
-        }
-
-        public void pause() {
-            running = false;
-            try {
-                gameloop.join();
-            } catch (InterruptedException e) {
-                }
-        }
-
-        @Override
-        public void run() {
-            while (running) {
-                if (!surface.getSurface().isValid()) continue;
-
-                Canvas canvas = surface.lockCanvas();
-                canvas.drawARGB(255, 154, 246, 240);
-                canvasWidth = canvas.getWidth();
-                canvasHeight = canvas.getHeight();
-                while (newPosition) {
-                    bitMapXStart = rand.nextInt(canvasWidth - bitMapWidth);
-                    bitMapYStart = rand.nextInt(canvasHeight - bitMapHeight);
-                    newPosition = false;
-                }
-                canvas.drawBitmap(clickMonster, bitMapXStart, bitMapYStart, null);
-
-                surface.unlockCanvasAndPost(canvas);
-
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-}
-*/

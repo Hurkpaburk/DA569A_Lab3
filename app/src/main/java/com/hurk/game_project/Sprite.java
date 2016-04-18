@@ -22,6 +22,7 @@ public class Sprite {
     private Float2 scale;
     private float rotation;
 
+
     public Sprite(Engine eng) {
         engine = eng;
         canvas = null;

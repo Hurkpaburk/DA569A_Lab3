@@ -38,9 +38,32 @@
         android:id="@+id/currScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/currScoreText"
+        android:layout_below="@+id/textAboutGame"
         android:layout_gravity="center_horizontal"
         android:layout_margin="30dp"
+        android:layout_toRightOf="@+id/currScoreText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/highScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/currScore"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:text="@string/highScoreText"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/highScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/currScore"
+        android:layout_margin="30dp"
+        android:layout_toRightOf="@+id/highScoreText"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000" />
 
@@ -48,11 +71,12 @@
         android:id="@+id/resetScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/currScore"
+        android:layout_below="@+id/highScoreText"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_margin="30dp"
         android:onClick="resetScore"
-        android:text="Reset Score"
+        android:text="Reset High Score"
         android:textColor="#000000" />
 
 </RelativeLayout>
