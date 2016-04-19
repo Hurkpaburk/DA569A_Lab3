@@ -112,13 +112,19 @@ public class PlayGame extends Engine {
 
 
             if (timer.stopWatch(update)) {
-
-                if ((clickMonster.getPosition().x + clickMonsterWidth >= canvasWidth || clickMonster.getPosition().x <= 0) ||
-                        (clickMonster.getPosition().y + clickMonsterHeight >= canvasHeight || clickMonster.getPosition().y <= 0)) {
-                    xDir = -xDir;
-                    yDir = -yDir;
-                } else {
-                    // Do nothing
+                
+                // Change direction if moving in to edge of screen
+                if (clickMonster.getPosition().x + clickMonsterWidth >= canvasWidth) {
+                    yDir= -yDir;
+                }
+                if (clickMonster.getPosition().y + clickMonsterWidth >= canvasHeight) {
+                    xDir= -xDir;
+                }
+                if (clickMonster.getPosition().x <= 0) {
+                    xDir= -xDir;
+                }
+                if (clickMonster.getPosition().y <= 0) {
+                    yDir= -yDir;
                 }
 
                 newXpos = clickMonster.getPosition().x + xDir;
