@@ -27,7 +27,7 @@ public class PlayGame extends Engine {
     private Timer timer;
     private Sprite clickMonster, evilMonster;
     private Texture clickMonsterImage, evilMonsterImage;
-    private boolean soundOn, newPosition, gameOver;
+    private boolean soundOn, newPosition, gameOver, level;
     private Intent intent;
     private Point touch, newPos;
     private Random rand;
@@ -53,6 +53,7 @@ public class PlayGame extends Engine {
         super.onCreate(savedInstanceState);
         intent = getIntent();
         soundOn = intent.getBooleanExtra(MainActivity.MESSAGE, true);
+        level = intent.getBooleanExtra(MainActivity.LEVELMESS, true);
         points = 0;
         mp = MediaPlayer.create(this, R.raw.sound);
     }
@@ -71,7 +72,9 @@ public class PlayGame extends Engine {
         clickMonsterWidth = clickMonsterImage.getWidth();
         clickMonsterHeight = clickMonsterImage.getHeight();
 
-        evilMonster = new Sprite(this);
+        if (level) {
+            evilMonster = new Sprite(this);
+
         evilMonsterImage = new Texture(this);
         if (!evilMonsterImage.loadFromAsset("Evil_Monster.png")) {
             super.fatalError("Error loading evilMonster image");
@@ -79,12 +82,13 @@ public class PlayGame extends Engine {
         evilMonster.setTexture(evilMonsterImage);
         evilMonsterWidth = evilMonsterImage.getWidth();
         evilMonsterHeight = evilMonsterImage.getHeight();
+        }
     }
 
     public void draw() {
         if (!gameOver) {
             getCanvas().drawColor(Color.argb(255, 154, 246, 240));
-            canvas = super.getCanvas();
+            canvas = getCanvas();
 
             canvasHeight = canvas.getHeight();
             canvasWidth = canvas.getWidth();
@@ -112,26 +116,9 @@ public class PlayGame extends Engine {
 
 
             if (timer.stopWatch(update)) {
-                
-                // Change direction if moving in to edge of screen
-                if (clickMonster.getPosition().x + clickMonsterWidth >= canvasWidth) {
-                    yDir= -yDir;
-                }
-                if (clickMonster.getPosition().y + clickMonsterWidth >= canvasHeight) {
-                    xDir= -xDir;
-                }
-                if (clickMonster.getPosition().x <= 0) {
-                    xDir= -xDir;
-                }
-                if (clickMonster.getPosition().y <= 0) {
-                    yDir= -yDir;
-                }
 
-                newXpos = clickMonster.getPosition().x + xDir;
-                newYpos = clickMonster.getPosition().x + xDir;
-                Point move = new Point(newXpos, newYpos);
-                clickMonster.setPosition(move);
-
+                xDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).x;
+                yDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).y;
             }
 
             clickMonster.draw();

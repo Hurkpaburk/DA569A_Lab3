@@ -10,8 +10,10 @@ import android.widget.CheckBox;
 public class MainActivity extends AppCompatActivity {
 
     public static final String MESSAGE = "MESSAGE";
-    public static final String POINTMESSAGE = "points";
+    public static final String LEVELMESS = "LEVEL";
+    public static final String POINTMESSAGE = "POINTS";
     protected boolean soundOn = true;
+    protected boolean level = false;
     protected int points;
     protected Intent intent;
 
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onCheckboxClicked(View view) {
+    public void onCheckSoundClicked(View view) {
 
         boolean checked = ((CheckBox) view).isChecked();
 
@@ -41,10 +43,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onCheckLevelClicked(View view) {
+
+        boolean checked = ((CheckBox) view).isChecked();
+
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+            case R.id.checkboxSound:
+                if (checked) {
+                    level = true;
+                }
+                else {
+                    level = false;
+                }
+                break;
+        }
+    }
+
     public void playGame(View view) {
         Intent intent = new Intent(this, PlayGame.class);
         intent.putExtra(MESSAGE, soundOn);
-        //intent.putExtra(POINTMESSAGE,points);
+        intent.putExtra(LEVELMESS,level);
         startActivityForResult(intent, 1);
     }
 

@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Monster Hunt</string>
     <string name="game_name">Choose your destiny:</string>
-    <string name="checkbox">Sound On/Off</string>
+    <string name="checkSound">Sound On</string>
+    <string name="checkLevel">Level 2</string>
     <string name="screen_info">Screen Information:</string>
     <string name="title_activity_screen_info">Temp</string>
     <string name="about_game">Score is reset to 0 for each game played.\nOne Point is given for pressing the yellow monster. Negative point is given for pressing outside the yellow monster.</string>
