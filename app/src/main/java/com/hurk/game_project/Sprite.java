@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 
+import java.util.Random;
+
 /* Code base taken from course literature */
 public class Sprite {
     public Point position;
@@ -17,6 +19,7 @@ public class Sprite {
     private Bitmap frameBitmap;
     private int width, height;
     private float rotation;
+    private Random rand;
 
 
     public Sprite(Engine eng) {
@@ -29,7 +32,7 @@ public class Sprite {
         frameBitmap = null;
         frameCanvas = null;
         rotation = 0.0f;
-
+        rand = new Random();
     }
 
     public void draw() {
@@ -85,5 +88,26 @@ public class Sprite {
         tmpPoint = new Point(tmpX, tmpY);
         this.position = new Point(position.x + tmpX, position.y + tmpY);
         return tmpPoint;
+    }
+
+    public boolean collision(Sprite sprite) {
+        if ((position.x <= sprite.getPosition().x + sprite.getTexture().getWidth()) && (sprite.getPosition().x <= position.x + texture.getWidth())) {
+            if ((position.y <= sprite.getPosition().y + sprite.getTexture().getHeight()) && (sprite.getPosition().y <= position.y + texture.getHeight())) {
+                return true; // Collision
+            }
+        }
+        if ((position.y <= sprite.getPosition().y + sprite.getTexture().getHeight()) && (sprite.getPosition().y <= position.y + texture.getHeight())) {
+            if ((position.x <= sprite.getPosition().x + sprite.getTexture().getWidth()) && (sprite.getPosition().x <= position.x + texture.getWidth())) {
+                return true; // Collision
+            }
+        }
+        return false;
+    }
+
+    public Point setNewRandPosition(Canvas can) {
+        int tmpx = rand.nextInt(can.getWidth() - texture.getWidth());
+        int tmpy = rand.nextInt(can.getHeight() - texture.getHeight());
+        this.position = new Point(tmpx, tmpy);
+        return this.position;
     }
 }

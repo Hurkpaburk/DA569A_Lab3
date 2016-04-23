@@ -4,7 +4,6 @@ package com.hurk.game_project;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -16,24 +15,20 @@ import java.util.Random;
 
 public class PlayGame extends Engine {
 
-    protected int clickMonsterHeight, clickMonsterWidth, clickMonsterXStart, clickMonsterYStart, points,
-            evilMonsterHeight, evilMonsterWidth, canvasWidth, canvasHeight, update, startUpdate, xDir, yDir,
-            newXpos, newYpos;
+    protected int points, canvasWidth, canvasHeight, update, startUpdate, xDir, yDir, xDirEvil, yDirEvil;
     protected MediaPlayer mp;
     float canvasRatio;
     TextPrinter textPrinter;
-    private Paint paint;
     private Canvas canvas;
     private Timer timer;
     private Sprite clickMonster, evilMonster;
     private Texture clickMonsterImage, evilMonsterImage;
-    private boolean soundOn, newPosition, gameOver, level;
+    private boolean soundOn, newPosition, gameOver, level, firstDraw;
     private Intent intent;
-    private Point touch, newPos;
+    private Point touch;
     private Random rand;
 
     public PlayGame() {
-        paint = new Paint();
         canvas = null;
         clickMonster = null;
         evilMonster = null;
@@ -41,9 +36,9 @@ public class PlayGame extends Engine {
         evilMonsterImage = null;
         timer = new Timer();
         touch = new Point();
-        newPos = new Point();
         rand = new Random();
-        newPosition = false;
+        newPosition = true;
+        firstDraw = true;
         startUpdate = 1000;
         textPrinter = new TextPrinter();
     }
@@ -52,8 +47,9 @@ public class PlayGame extends Engine {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intent = getIntent();
-        soundOn = intent.getBooleanExtra(MainActivity.MESSAGE, true);
-        level = intent.getBooleanExtra(MainActivity.LEVELMESS, true);
+        Bundle extras = intent.getExtras();
+        soundOn = extras.getBoolean(MainActivity.MESSAGE, true);
+        level = extras.getBoolean(MainActivity.LEVELMESS, true);
         points = 0;
         mp = MediaPlayer.create(this, R.raw.sound);
     }
@@ -69,20 +65,13 @@ public class PlayGame extends Engine {
             super.fatalError("Error loading clickMonster image");
         }
         clickMonster.setTexture(clickMonsterImage);
-        clickMonsterWidth = clickMonsterImage.getWidth();
-        clickMonsterHeight = clickMonsterImage.getHeight();
 
-        if (level) {
             evilMonster = new Sprite(this);
-
         evilMonsterImage = new Texture(this);
-        if (!evilMonsterImage.loadFromAsset("Evil_Monster.png")) {
+        if (!evilMonsterImage.loadFromAsset("evil_monster.png")) {
             super.fatalError("Error loading evilMonster image");
         }
         evilMonster.setTexture(evilMonsterImage);
-        evilMonsterWidth = evilMonsterImage.getWidth();
-        evilMonsterHeight = evilMonsterImage.getHeight();
-        }
     }
 
     public void draw() {
@@ -94,17 +83,30 @@ public class PlayGame extends Engine {
             canvasWidth = canvas.getWidth();
             canvasRatio = (float) canvasWidth / canvasHeight;
 
+            if (level && firstDraw) {
+                evilMonster.setNewRandPosition(canvas);
+                firstDraw = false;
+            }
 
             while (newPosition) {
-                clickMonsterXStart = rand.nextInt(canvasWidth - clickMonsterWidth);
-                clickMonsterYStart = rand.nextInt(canvasHeight - clickMonsterHeight);
+                clickMonster.setNewRandPosition(canvas);
 
-                newPos.set(clickMonsterXStart, clickMonsterYStart);
-                clickMonster.setPosition(newPos);
+                if (level) {
+                    while (clickMonster.collision(evilMonster)) {
+                        clickMonster.setNewRandPosition(canvas);
+                    }
+                } else {
+                    // Do Nothing
+                }
 
-                xDir = rand.nextInt(points * 8) - points * 4;
-                yDir = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
-
+                if (points > 0) {
+                    xDir = rand.nextInt(points * 8) - points * 4;
+                    yDir = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
+                    if (level) {
+                        xDirEvil = rand.nextInt(points * 8) - points * 4;
+                        yDirEvil = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
+                    }
+                }
                 newPosition = false;
             }
 
@@ -119,17 +121,24 @@ public class PlayGame extends Engine {
 
                 xDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).x;
                 yDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).y;
+
+                if (level) {
+                    xDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).x;
+                    yDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).y;
+                    if (clickMonster.collision(evilMonster)) {
+                        gameOver = true;
+                    }
+                }
             }
 
             clickMonster.draw();
 
+            if (level) {
+                evilMonster.draw();
+            }
+
         } else {
-            textPrinter.setCanvas(canvas);
-            textPrinter.setColor(Color.BLACK);
-            textPrinter.setTextSize(80);
-            textPrinter.draw("GAME OVER", 20, canvasHeight / 2);
-            textPrinter.setTextSize(50);
-            textPrinter.draw("Press back to return to main menu", 20, canvasHeight / 2 + 30);
+            gameOver();
         }
     }
 
@@ -145,8 +154,8 @@ public class PlayGame extends Engine {
                 if (points < 0) {
                     gameOver = true;
                 } else {
-                    if ((touch.x >= clickMonster.getPosition().x && touch.x <= clickMonster.getPosition().x + clickMonsterWidth) &&
-                            (touch.y >= clickMonster.getPosition().y && touch.y <= clickMonster.getPosition().y + clickMonsterHeight)) {
+                    if ((touch.x >= clickMonster.getPosition().x && touch.x <= clickMonster.getPosition().x + clickMonster.getTexture().getWidth()) &&
+                            (touch.y >= clickMonster.getPosition().y && touch.y <= clickMonster.getPosition().y + clickMonster.getTexture().getHeight())) {
                         if (soundOn) {
                             mp.start();
                         } else {
@@ -174,5 +183,15 @@ public class PlayGame extends Engine {
         Log.v("onBackPressed", Integer.toString(points));
         setResult(1, intent);
         finish();
+    }
+
+    private void gameOver() {
+        textPrinter.setCanvas(canvas);
+        textPrinter.setColor(Color.BLACK);
+        textPrinter.setTextSize(80);
+        textPrinter.draw("GAME OVER", 20, canvasHeight / 2);
+        textPrinter.draw("", 20, canvasHeight / 2);
+        textPrinter.setTextSize(50);
+        textPrinter.draw("Press back to return to main menu", 20, canvasHeight / 2 + 30);
     }
 }

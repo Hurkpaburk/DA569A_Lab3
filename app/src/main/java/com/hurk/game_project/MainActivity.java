@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check which checkbox was clicked
         switch(view.getId()) {
-            case R.id.checkboxSound:
+            case R.id.checkBoxLevel:
                 if (checked) {
                     level = true;
                 }
@@ -62,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void playGame(View view) {
         Intent intent = new Intent(this, PlayGame.class);
-        intent.putExtra(MESSAGE, soundOn);
-        intent.putExtra(LEVELMESS,level);
+        Bundle extras = new Bundle();
+        extras.putBoolean(MESSAGE, soundOn);
+        extras.putBoolean(LEVELMESS, level);
+        intent.putExtras(extras);
+        Log.d("LEVEL Main Activity", Boolean.toString(level));
         startActivityForResult(intent, 1);
     }
 

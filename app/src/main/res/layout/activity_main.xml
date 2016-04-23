@@ -40,12 +40,12 @@
         android:text="@string/checkSound" />
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/checkBoxLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="30dp"
-        android:checked="true"
+        android:checked="false"
         android:onClick="onCheckLevelClicked"
         android:text="@string/checkLevel" />
 
