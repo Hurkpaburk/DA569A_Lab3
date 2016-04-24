@@ -71,7 +71,7 @@ public class Sprite {
     public Point edgeDetection(Point dir, Canvas canv) {
         int tmpX = dir.x;
         int tmpY = dir.y;
-        Point tmpPoint = null;
+        Point tmpPoint;
 
         if (position.x + texture.getWidth() >= canv.getWidth()) {
             tmpX = -tmpX;

@@ -17,7 +17,7 @@ public class PlayGame extends Engine {
 
     protected int points, canvasWidth, canvasHeight, update, startUpdate, xDir, yDir, xDirEvil, yDirEvil;
     protected MediaPlayer mp;
-    float canvasRatio;
+    int canvasRatio;
     TextPrinter textPrinter;
     private Canvas canvas;
     private Timer timer;
@@ -81,7 +81,7 @@ public class PlayGame extends Engine {
 
             canvasHeight = canvas.getHeight();
             canvasWidth = canvas.getWidth();
-            canvasRatio = (float) canvasWidth / canvasHeight;
+            canvasRatio = Math.round(canvasHeight / canvasWidth);
 
             if (level && firstDraw) {
                 evilMonster.setNewRandPosition(canvas);
@@ -100,8 +100,9 @@ public class PlayGame extends Engine {
                 }
 
                 if (points > 0) {
-                    xDir = rand.nextInt(points * 8) - points * 4;
-                    yDir = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
+                    xDir = rand.nextInt(points * 2) - points;
+                    yDir = canvasRatio * (rand.nextInt(points * 2) - points);
+
                     if (level) {
                         xDirEvil = rand.nextInt(points * 8) - points * 4;
                         yDirEvil = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
@@ -115,7 +116,7 @@ public class PlayGame extends Engine {
             } else {
                 update = Math.max(startUpdate / points, 1);
             }
-
+            update = 10;
 
             if (timer.stopWatch(update)) {
 
@@ -125,16 +126,16 @@ public class PlayGame extends Engine {
                 if (level) {
                     xDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).x;
                     yDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).y;
+                    if (clickMonster.collision(evilMonster)) {
+                        gameOver = true;
+                    }
+                }
             }
 
             clickMonster.draw();
 
             if (level) {
                 evilMonster.draw();
-                if (clickMonster.collision(evilMonster)) {
-                    gameOver = true;
-                }
-            }
             }
 
         } else {
