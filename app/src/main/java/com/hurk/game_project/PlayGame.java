@@ -125,16 +125,16 @@ public class PlayGame extends Engine {
                 if (level) {
                     xDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).x;
                     yDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).y;
-                    if (clickMonster.collision(evilMonster)) {
-                        gameOver = true;
-                    }
-                }
             }
 
             clickMonster.draw();
 
             if (level) {
                 evilMonster.draw();
+                if (clickMonster.collision(evilMonster)) {
+                    gameOver = true;
+                }
+            }
             }
 
         } else {

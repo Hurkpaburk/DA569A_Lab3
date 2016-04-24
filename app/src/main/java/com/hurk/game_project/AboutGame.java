@@ -20,7 +20,7 @@ public class AboutGame extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         intent = getIntent();
-        points = intent.getIntExtra(MainActivity.POINTMESSAGE, 0);
+        points = Math.max(0, intent.getIntExtra(MainActivity.POINTMESSAGE, 0));
         scorePref = getSharedPreferences(scoreFile, Activity.MODE_PRIVATE);
         highScore = scorePref.getInt(scoreFile, 0);
 
