@@ -18,7 +18,6 @@ public class Sprite {
     private Paint paint;
     private Bitmap frameBitmap;
     private int width, height;
-    private float rotation;
     private Random rand;
 
 
@@ -31,8 +30,7 @@ public class Sprite {
         position = new Point(0, 0);
         frameBitmap = null;
         frameCanvas = null;
-        rotation = 0.0f;
-        rand = new Random();
+        rand = new Random(System.currentTimeMillis());
     }
 
     public void draw() {
