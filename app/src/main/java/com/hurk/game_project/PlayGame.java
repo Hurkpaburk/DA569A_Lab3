@@ -104,38 +104,30 @@ public class PlayGame extends Engine {
                     yDir = canvasRatio * (rand.nextInt(points * 2) - points);
 
                     if (level) {
-                        xDirEvil = rand.nextInt(points * 8) - points * 4;
-                        yDirEvil = ((int) (canvasRatio * 10) * (rand.nextInt(points * 8) - points * 4)) / 10;
+                        xDirEvil = rand.nextInt(points * 2) - points;
+                        yDirEvil = canvasRatio * (rand.nextInt(points * 2) - points);
                     }
                 }
                 newPosition = false;
             }
 
-            if (points == 0) {
-                update = startUpdate;
-            } else {
-                update = Math.max(startUpdate / points, 1);
-            }
-            update = 10;
+            xDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).x;
+            yDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).y;
 
-            if (timer.stopWatch(update)) {
-
-                xDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).x;
-                yDir = clickMonster.edgeDetection(new Point(xDir, yDir), canvas).y;
 
                 if (level) {
                     xDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).x;
                     yDirEvil = evilMonster.edgeDetection(new Point(xDirEvil, yDirEvil), canvas).y;
-                    if (clickMonster.collision(evilMonster)) {
-                        gameOver = true;
-                    }
+
                 }
-            }
 
             clickMonster.draw();
 
             if (level) {
                 evilMonster.draw();
+                if (clickMonster.collision(evilMonster)) {
+                    gameOver = true;
+                }
             }
 
         } else {
@@ -191,8 +183,8 @@ public class PlayGame extends Engine {
         textPrinter.setColor(Color.BLACK);
         textPrinter.setTextSize(80);
         textPrinter.draw("GAME OVER", 20, canvasHeight / 2);
-        textPrinter.draw("", 20, canvasHeight / 2);
+        textPrinter.draw("", 20, canvasHeight / 2 + 60);
         textPrinter.setTextSize(50);
-        textPrinter.draw("Press back to return to main menu", 20, canvasHeight / 2 + 30);
+        textPrinter.draw("Press back to return to main menu", 20, canvasHeight / 2 + 50);
     }
 }

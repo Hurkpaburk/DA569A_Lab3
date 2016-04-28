@@ -71,20 +71,20 @@ public class Sprite {
         int tmpY = dir.y;
         Point tmpPoint;
 
-        if (position.x + texture.getWidth() >= canv.getWidth()) {
+        if (position.x + texture.getWidth() + tmpX > canv.getWidth()) {
             tmpX = -tmpX;
         }
-        if (position.y + texture.getHeight() >= canv.getHeight()) {
+        if (position.y + texture.getHeight() + tmpY >= canv.getHeight()) {
             tmpY = -tmpY;
         }
-        if (position.x <= 0) {
+        if (position.x + tmpX <= 0) {
             tmpX = -tmpX;
         }
-        if (position.y <= 0) {
+        if (position.y + tmpY <= 0) {
             tmpY = -tmpY;
         }
+        position = new Point(position.x + tmpX, position.y + tmpY);
         tmpPoint = new Point(tmpX, tmpY);
-        this.position = new Point(position.x + tmpX, position.y + tmpY);
         return tmpPoint;
     }
 
